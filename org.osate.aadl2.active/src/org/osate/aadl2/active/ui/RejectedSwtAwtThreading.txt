@@ -1,0 +1,140 @@
+/* 
+ * The following is the code samples that we tried to make SWT, AWT, Eclipse, and JGraphX work together. 
+ * It's still not clear why some of them did and some of them didn't. 
+ */ 
+
+
+
+//		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() { 
+//			@Override
+//			public void run() {
+//				Display display = PlatformUI.getWorkbench().getDisplay();
+//				MessageDialog.openConfirm(display.getActiveShell(), "Confirm", "Please confirm");
+//			}
+//		});
+		
+//		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+//			@Override
+//			public void run() {
+
+
+				//				Display.getDefault().asyncExec(new Runnable() {
+				//					@Override
+				//					public void run() {
+				//
+				//						Job j = new Job("Analysis job") {
+				//
+				//							protected IStatus run(IProgressMonitor monitor) {
+				//								executeAnalysesSequence(lst, monitor);
+				//								return Status.OK_STATUS;
+				//							}
+				//						}; 
+				//						j.schedule();
+				//					}
+				//				});
+				//			}
+				//		};
+
+
+
+
+				//						JFrame f = new JFrame();
+				//						f.setTitle("Double-click to select analysis to run");
+				//						//				graphView.getContentPane().add(graphComponent);
+				//						f.setSize(new Dimension(600, 400));
+				//						f.setVisible(true);
+				//
+				//						return Status.OK_STATUS;
+				//					}
+				//				}; 
+				//				j.schedule();
+
+
+				//				 create a graph that calls analysisSelected when one of analyses is double-clicked
+				//				final mxGraphComponent graphComponent = new mxGraphComponent(jgxAdapter) {
+				//					@Override
+				//					protected void installDoubleClickHandler() {
+				//						graphControl.addMouseListener(new MouseAdapter() {
+				//							@Override
+				//							public void mouseReleased(MouseEvent e) {
+				//								if (!e.isConsumed() && isEditEvent(e)) {
+				//									Object cell = getCellAt(e.getX(), e.getY(), false);
+				//									if (cell != null /*
+				//									 * &&
+				//									 * getGraph().isCellEditable(cell)
+				//									 */) {
+				//										// Object val = graph.getModel().getValue(cell);
+				//										// System.out.println("double-clicked on " +
+				//										// graph.getLabel(cell) +
+				//										// " cell = " + cell + " val= " + val);
+				//										analysisSelected(cell);
+				//									}
+				//								}
+				//							}
+				//						});
+				//					}
+				//				};				
+
+
+			}
+		});
+		//		Shell sh = new Shell();
+		//		Composite c = new Composite(sh, SWT.EMBEDDED);
+
+		//		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() { 
+		//			@Override
+		//			public void run() {
+		//				Display display = PlatformUI.getWorkbench().getDisplay();
+		//				MessageDialog.openConfirm(display.getActiveShell(), "Confirm", "Please confirm");
+		//			}
+		//		});
+
+
+		//		java.awt.Frame awtFrame = SWT_AWT.new_Frame(c);
+		//		java.awt.Panel panel = new java.awt.Panel(new java.awt.BorderLayout());
+		//		awtFrame.add(panel);
+		//		JScrollPane jsp = new JScrollPane(); 
+		//		panel.add(graphComponent); 
+
+		//		awtFrame.add(graphComponent);
+
+		//		graphView = new JFrame();
+		//		graphView.setModal(true);
+		//		graphView.setTitle("Double-click to select analysis to run");
+		//		graphView.getContentPane().add(graphComponent);
+		//		graphView.setSize(new Dimension(600, 400));
+		//		graphView.setVisible(true);
+
+		// positioning via jgraphx layouts
+		//		mxCircleLayout layout = new mxCircleLayout(jgxAdapter);
+		//		layout.execute(jgxAdapter.getDefaultParent());
+		//
+		//		jgxAdapter.setCellsEditable(false);
+		//
+
+		//	    shell.open();
+		//	    while (!shell.isDisposed()) {
+		//	      if (!display.readAndDispatch())
+		//	        display.sleep();
+		//	    }
+
+
+		//
+		//		Runnable r = new Runnable() {
+		//			@Override
+		//			public void run() {
+		//				
+		//				Composite composite = new Composite(null, SWT.EMBEDDED | SWT.NO_BACKGROUND);
+		//				Frame frame = SWT_AWT.new_Frame(composite);
+		//				composite.setVisible(true);
+		//				
+		////				JFrame f = new JFrame();
+		////				f.setTitle("Double-click to select analysis to run");
+		////				//				graphView.getContentPane().add(graphComponent);
+		////				f.setSize(new Dimension(600, 400));
+		////				f.setVisible(true);
+		//			} 
+		//		};
+		//		new Thread(r).start(); 
+
+		

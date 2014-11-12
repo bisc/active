@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin
+
+	id="org.osate.aadl2.active"
+	name="ACTIVE: a tool for verifying analysis contracts">
+ 
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.osate.aadl2.active.actionSet"
+            label="ACTIVE Action Set"
+            visible="true">
+            
+         <action
+               class="org.osate.aadl2.active.contracts.ContractAnalysisAction"
+               id="org.osate.aadl2.active.actions.ContractAnalysisAction"
+               label="ACTIVE"
+               menubarPath="menu.analyses/bottom.grp"
+               toolbarPath="Normal/analysis"
+               tooltip="Run contract analysis with ACTIVE">
+               <enablement>
+				<or>
+				<and>
+					<objectClass name="org.eclipse.core.resources.IFile"/>
+					<objectState name="extension" value="aaxl2"/>
+				</and>
+			</or>
+			</enablement> 
+			<!--other potential enablement: <objectClass name="org.osate.xtext.aadl2.contracts.Contract.AnalysisSubclause"/-->
+         </action>
+      </actionSet>
+   </extension>
+
+</plugin>

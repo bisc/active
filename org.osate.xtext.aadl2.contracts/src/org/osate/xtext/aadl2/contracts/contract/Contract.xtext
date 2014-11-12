@@ -1,0 +1,264 @@
+/** <copyright>
+ * Copyright (c) 2014 Carnegie Mellon University. All Rights Reserved.
+
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following acknowledgments
+ * and disclaimers.
+
+ * 2. Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+
+ * 3. The names "Carnegie Mellon University," "SEI" and/or "Software
+ * Engineering Institute" shall not be used to endorse or promote
+ * products derived from this software without prior written
+ * permission. For written permission, please contact
+ * permission@sei.cmu.edu.
+
+ * 4. Products derived from this software may not be called "SEI" nor
+ * may "SEI" appear in their names without prior written permission of
+ * permission@sei.cmu.edu.
+
+ * 5. Redistributions of any form whatsoever must retain the following
+ * acknowledgment:
+
+ * This material is based upon work funded and supported by the
+ * Department of Defense under Contract No. FA8721-05-C-0003 with
+ * Carnegie Mellon University for the operation of the Software
+ * Engineering Institute, a federally funded research and development
+ * center.
+
+ * Any opinions, findings and conclusions or recommendations expressed
+ * in this material are those of the author(s) and do not necessarily
+ * reflect the views of the United States Department of Defense.
+
+ * NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE
+ * ENGINEERING INSTITUTE MATERIAL IS FURNISHED ON AN "AS-IS"
+ * BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY KIND,
+ * EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT
+ * LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR MERCHANTABILITY,
+ * EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE
+ * MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH
+ * RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT
+ * INFRINGEMENT.
+
+ * This material has been approved for public release and unlimited
+ * distribution.
+
+ * DM-0001534
+
+ </copyright> **/
+
+grammar org.osate.xtext.aadl2.contracts.Contract 
+//with org.osate.xtext.aadl2.properties.Properties
+with org.eclipse.xtext.common.Terminals
+hidden(WS, AADL_SL_COMMENT)
+
+generate Contract "http://www.xtext.org/example/contract/Contract"
+
+// access the metamodel of the core aadl2 language 
+import "platform:/resource/org.osate.aadl2/model/aadl2.ecore" as aadl2
+// access eclipse ecore
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+
+// not actively interpreted, but needed
+GrammarRoot:
+	'library' aclib=AnalysisLibrary | acsc=AnalysisSubclause;
+
+// TODO parse a string and then getProperty()
+// refer to properties by a reference to a PropertyDefinition (via resolution)
+
+// TODO need to factor out contracts into a library and reference it from here. so we have contract decl and contract def
+// refer to the subclause from ModalElement to be able to reference it in a library
+// look at the error model annex for example code. 
+
+// tribute to aadl2 compatibility
+AnnexLibrary returns aadl2::AnnexLibrary:
+	AnalysisLibrary;
+AnnexSubclause returns aadl2::AnnexSubclause:
+	AnalysisSubclause;
+
+NamedElement returns aadl2::NamedElement:
+	AnalysisLibrary | AnalysisContract;
+ModalElement returns aadl2::ModalElement:
+	AnalysisSubclause;
+
+// analysis contracts rules
+AnalysisSubclause returns AnalysisSubclause: 
+	{AnalysisSubclause} 'use' contractrefs+=[AnalysisContract|QEMREF] (COMMA contractrefs+=[AnalysisContract|QEMREF])*;
+
+AnalysisLibrary returns AnalysisLibrary:
+	{AnalysisLibrary} contracts+=(AnalysisContract)+;
+
+AnalysisContract returns AnalysisContract:
+	'name' name=ID // used to be 'name' analysisName=ID // TODO why using name=ID here doesn't result in NamedElement::getName() returning the ID? 
+	(
+		input=InputClause? &
+		output=OutputClause? &
+		('assumes' assumptions+=ContractClause)* &
+		('guarantees' guarantees+=ContractClause)*
+	);
+
+InputClause returns InputClause:
+	'input' names+=QFGTMREF (COMMA names+=QFGTMREF)*;
+
+OutputClause returns OutputClause:
+	'output' names+=QFGTMREF (COMMA names+=QFGTMREF)*;
+
+// A tradeoff in creating this language. I can have 2 out of 3:
+// 1.Language-level separation between the FOL premise and the LTL formula
+// 2.A single hierarchy for both FOL and LTL formulas
+// 3.Fair hierarchical ltl formulas
+// Currently: the first statement is not there
+
+ContractClause returns ContractClause:
+//	(fv=QuantClause fol=FOLClause IMPLIES)? ltl=LTLClause | 
+//	fv=QuantClause fol=FOLClause | 
+//	ltl=LTLClause 
+
+//	quant=QuantClause SUCHTHAT fol=FOLClause HOLDS ltl=LTLClause | // general case
+//	quant=QuantClause HOLDS ltl=LTLClause // skipped limitation on quantified vars
+//	ltl=LTLClause | // a plain statement like 1>0, implicitly everything is universally quantified but cannot mention?
+
+	((varQuant=QuantClause)? (SUCHTHAT suchThat=AndOrExpression)? COLON)? holds=LTLExpression // general case
+;
+
+QuantClause returns QuantClause:
+	quant=(QuantifierType) ids+=ID COLON types+=ID (COMMA ids+=ID COLON types+=ID)*;
+//	quant=(QuantifierType) types+=ID ids+=ID  (COMMA types+=ID ids+=ID)*;
+
+Literal returns Expression:
+	LPAREN LTLExpression RPAREN |
+	{FunctionalExpression} func=QFGTMREF LPAREN (args+=LTLExpression (COMMA args+=LTLExpression)*)? RPAREN | 
+	{IntLiteral} value=INT |
+	{FloatLiteral} value=FLOAT | //{FloatLiteral} value=FLOAT |
+	{BooleanLiteral} value=(TRUE | FALSE) |
+	{StringLiteral} value=STRING | // <- this is for values, every identifier is covered by QFGTMREF 
+	{ListLiteral} list=QFGTMREF LBRACE index=Literal RBRACE |
+	QFGTMREF;
+	
+Prefixed returns Expression:
+	Literal | // can be another literal 
+	{BooleanNegation} NOT expression=Literal |
+	{ArithmeticSigned} MINUS expression=Literal; 
+	
+Multiplication returns Expression:
+	Prefixed ({Multiplication.left=current} op=MultOp right=Prefixed)*;
+	
+Addition returns Expression:
+	Multiplication
+	({Addition.left=current} op=(PLUS | MINUS)
+	right=Multiplication)*;
+	
+ComparisonExpression returns Expression:
+	Addition (({ComparisonExpression.left=current} op=CompOp) right=Addition)*;
+	
+ListExpression returns Expression: 
+	ComparisonExpression ({ListExpression.left=current} op=ListInOp right=QFGTMREF)?;
+	
+AndOrExpression returns Expression:
+	ListExpression (({AndOrExpression.left=current} op=BoolBinOp) right=ListExpression)*; 
+	
+LTLExpression returns Expression:
+	AndOrExpression ({LTLExpression.left=current} binop=LTLBinOp right=AndOrExpression)? | 
+	{LTLExpression} unop=LTLUnOp expression=AndOrExpression
+;
+
+// expressions can be done with: part of property values in aadl2, or get xtext2 expression language
+/*Expression returns Expression: //  aadl2::PropertyExpression?
+	//expr = [aadl2::PropertyExpression]	
+	AndOrExpression
+;*/
+
+QFGTMREF:
+	(ids+=ID '.')* ids+=ID;
+	
+QEMREF:
+	 (ID '::')* ID ;
+
+// TODO connect Prop to the original metamodel as a subclass of element
+//Prop returns Prop:
+//	(sub=[aadl2::Subcomponent|ID] ':')? propName=ID;
+//	
+//
+//Element returns aadl2::Element:
+//	Prop;
+
+//enum Quantifier: 
+//	FORALL = 'forall' | EXISTS = 'exists'
+//;
+
+SUCHTHAT:
+	"|";
+COLON:
+	":";
+	
+enum QuantifierType: 
+	FORALL = 'forall'|
+	EXISTS = 'exists';
+
+TRUE:
+	"true";
+FALSE :
+	"false";
+	
+terminal AADL_SL_COMMENT : '--' !('\n'|'\r')* ('\r'? '\n')?;	
+
+terminal INT returns ecore::EInt: ('0'..'9')+;	
+
+terminal FLOAT returns ecore::EFloat:
+	INT '.' INT;
+	
+terminal LPAREN: "(";
+terminal RPAREN: ")";
+
+terminal LBRACE: "[";
+terminal RBRACE: "]";
+
+
+terminal COMMA: ",";
+
+terminal NOT:
+	"!" | "NOT";
+
+enum ListInOp: 
+	IN = "in" |
+	NOTIN = "notin"
+;
+
+enum BoolBinOp: 
+	 AND = "&&" | AND = "AND" |
+	 OR = "||" | OR = "OR" | 
+	 IMPLIES = "->" | IMPLIES = "=>"
+;
+
+enum CompOp: 
+	LESSTHAN = "<" |
+	MORETHAN = ">" |
+	EQUALS = "=" |
+	NOTEQUALS = "!=" |
+	LESSOREQUAL = "<=" | 
+	MOREOREQUAL = ">=" 
+;
+	
+terminal PLUS: "+";
+
+terminal MINUS:	"-";
+
+
+enum MultOp: 
+	MULTIPLY = "*" | DIVIDE = "/"  
+;
+
+enum LTLUnOp:
+	GLOBALLY = "G" | FUTURE = "F" | NEXT = "X"
+;
+	
+enum LTLBinOp: 
+	UNTIL = "U" | WEAKUNTIL = "W";

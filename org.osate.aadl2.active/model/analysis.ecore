@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="analysis" nsURI="http://analysis/1.0" nsPrefix="analysis">
+  <eClassifiers xsi:type="ecore:EEnum" name="AssumptionType">
+    <eLiterals name="ENSURES"/>
+    <eLiterals name="ASSUMES" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="ComparatorType">
+    <eLiterals name="EQUAL"/>
+    <eLiterals name="NOTEQUAL" value="1"/>
+    <eLiterals name="LESSTHAN" value="2"/>
+    <eLiterals name="GREATERTHAN" value="3"/>
+    <eLiterals name="ATMOST" value="4"/>
+    <eLiterals name="ATLEAST" value="5"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="LogicalConnector">
+    <eLiterals name="AND"/>
+    <eLiterals name="OR" value="1"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssumptionSubclause" eSuperTypes="../../org.osate.aadl2/model/aadl2.ecore#//AnnexSubclause">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" eType="#//AssumptionType"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="comparison" lowerBound="1"
+        eType="#//ComparisonExpression" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComparisonExpression"/>
+  <eClassifiers xsi:type="ecore:EClass" name="SimpleComparison" eSuperTypes="#//ComparisonExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="comparator" eType="#//ComparatorType"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oper1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oper2" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="isOper1Probe" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="IsOper2Probe" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="probe1" lowerBound="1"
+        eType="ecore:EClass ../../org.osate.aadl2/model/aadl2.ecore#//Feature"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="probe2" lowerBound="2"
+        upperBound="2" eType="ecore:EClass ../../org.osate.aadl2/model/aadl2.ecore#//Feature"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ComposedComparison" eSuperTypes="#//ComparisonExpression">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="logicConnector" eType="#//LogicalConnector"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="comparison1" lowerBound="2"
+        upperBound="2" eType="#//ComparisonExpression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="comparison2" lowerBound="1"
+        eType="#//ComparisonExpression" containment="true"/>
+  </eClassifiers>
+</ecore:EPackage>

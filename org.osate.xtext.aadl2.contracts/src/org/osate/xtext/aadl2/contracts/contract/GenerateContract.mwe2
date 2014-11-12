@@ -1,0 +1,229 @@
+/** <copyright>
+ * Copyright (c) 2014 Carnegie Mellon University. All Rights Reserved.
+
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+
+ * 1. Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following acknowledgments
+ * and disclaimers.
+
+ * 2. Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+
+ * 3. The names "Carnegie Mellon University," "SEI" and/or "Software
+ * Engineering Institute" shall not be used to endorse or promote
+ * products derived from this software without prior written
+ * permission. For written permission, please contact
+ * permission@sei.cmu.edu.
+
+ * 4. Products derived from this software may not be called "SEI" nor
+ * may "SEI" appear in their names without prior written permission of
+ * permission@sei.cmu.edu.
+
+ * 5. Redistributions of any form whatsoever must retain the following
+ * acknowledgment:
+
+ * This material is based upon work funded and supported by the
+ * Department of Defense under Contract No. FA8721-05-C-0003 with
+ * Carnegie Mellon University for the operation of the Software
+ * Engineering Institute, a federally funded research and development
+ * center.
+
+ * Any opinions, findings and conclusions or recommendations expressed
+ * in this material are those of the author(s) and do not necessarily
+ * reflect the views of the United States Department of Defense.
+
+ * NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE
+ * ENGINEERING INSTITUTE MATERIAL IS FURNISHED ON AN "AS-IS"
+ * BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY KIND,
+ * EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT
+ * LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE OR MERCHANTABILITY,
+ * EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE
+ * MELLON UNIVERSITY DOES NOT MAKE ANY WARRANTY OF ANY KIND WITH
+ * RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT
+ * INFRINGEMENT.
+
+ * This material has been approved for public release and unlimited
+ * distribution.
+
+ * DM-0001534
+
+ </copyright> **/
+
+module org.osate.xtext.aadl2.contracts.contract.GenerateContract
+
+import org.eclipse.emf.mwe.utils.*
+import org.eclipse.xtext.generator.*
+import org.eclipse.xtext.ui.generator.*
+
+
+var grammarURI = "classpath:/org/osate/xtext/aadl2/contracts/contract/Contract.xtext"
+var file.extensions = "contract"
+var projectName = "org.osate.xtext.aadl2.contracts"
+var runtimeProject = "../${projectName}"
+var generateXtendStub = true
+
+Workflow {
+    bean = StandaloneSetup {
+            scanClassPath = true
+            platformUri = "${runtimeProject}/.."
+            
+//        registerGeneratedEPackage = "org.eclipse.emf.ecore.EcorePackage"
+//        registerGeneratedEPackage = "org.eclipse.uml2.types.TypesPackage"
+//        registerGeneratedEPackage = "org.eclipse.uml2.uml.UMLPackage"
+//        registerGeneratedEPackage = "org.eclipse.emf.codegen.ecore.genmodel.GenModelPackage"
+        registerGeneratedEPackage = "org.eclipse.uml2.codegen.ecore.genmodel.GenModelPackage"
+//        registerGenModelFile = "platform:/resource/org.eclipse.emf.ecore/model/Ecore.genmodel"
+//        registerGenModelFile = "platform:/resource/org.eclipse.emf.codegen.ecore/model/GenModel.genmodel"
+//        registerGenModelFile = "platform:/resource/org.eclipse.uml2.types/model/Types.genmodel"
+//        registerGenModelFile = "platform:/resource/org.eclipse.uml2.uml/model/UML.genmodel"
+        registerGenModelFile = "platform:/resource/org.eclipse.uml2.codegen.ecore/model/GenModel.genmodel"
+
+		registerGeneratedEPackage = "org.osate.aadl2.Aadl2Package"
+		registerGenModelFile = "platform:/resource/org.osate.aadl2/model/aadl2.genmodel"
+          
+          //previous:  
+		//registerGenModelFile = "platform:/resource/org.osate.aadl2/model/aadl2.genmodel"
+            // The following two lines can be removed, if Xbase is not used.
+          //  registerGeneratedEPackage = "org.eclipse.xtext.xbase.XbasePackage"
+          //  registerGenModelFile = "platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel"
+        }
+    
+        component = DirectoryCleaner {
+            directory = "${runtimeProject}/src-gen"
+        }
+    
+        component = DirectoryCleaner {
+            directory = "${runtimeProject}.ui/src-gen"
+        }
+    
+        component = Generator {
+            pathRtProject = runtimeProject
+            pathUiProject = "${runtimeProject}.ui"
+//            pathTestProject = "${runtimeProject}.tests"
+            projectNameRt = projectName
+            projectNameUi = "${projectName}.ui"
+            language = {
+                uri = grammarURI
+                fileExtensions = file.extensions
+    
+                // Java API to access grammar elements (required by several other fragments)
+                fragment = grammarAccess.GrammarAccessFragment {}
+    
+                // generates Java API for the generated EPackages
+                fragment = ecore.EcoreGeneratorFragment {
+                // referencedGenModels = "
+                //  platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel,
+                //  platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel
+                // "
+                }
+    
+                // Serializer 2.0
+                fragment = serializer.SerializerFragment {
+//                	generateStub = false
+                }
+                
+                // the serialization component (1.0)
+                // fragment = parseTreeConstructor.ParseTreeConstructorFragment {}
+    
+                // a custom ResourceFactory for use with EMF
+                fragment = resourceFactory.ResourceFactoryFragment {
+                    fileExtensions = file.extensions
+                }
+    
+//                // The antlr parser generator fragment.
+//                fragment = parser.antlr.XtextAntlrGeneratorFragment {
+//                //  options = {
+//                //      backtrack = true
+//                //  }
+//                }
+
+ 			fragment = parser.antlr.ex.rt.AntlrGeneratorFragment {
+    		options = {
+        		ignoreCase = true
+//				backtrack = true
+				classSplitting = true
+    			}
+			}
+    
+                // java-based API for validation
+                fragment = validation.JavaValidatorFragment {
+                //    composedCheck = "org.eclipse.xtext.validation.ImportUriValidator"
+                //    composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
+                }
+    
+                // scoping and exporting API
+                // fragment = scoping.ImportURIScopingFragment {}
+                // fragment = exporting.SimpleNamesFragment {}
+    
+                // scoping and exporting API
+                fragment = scoping.ImportNamespacesScopingFragment {}
+                fragment = exporting.QualifiedNamesFragment {}
+                fragment = builder.BuilderIntegrationFragment {}
+    
+//                // generator API
+//                fragment = generator.GeneratorFragment {
+//                    generateMwe = false
+//                    generateJavaMain = false
+//                }
+    
+                // formatter API
+                fragment = formatting.FormatterFragment {}
+    
+                // labeling API
+                fragment = labeling.LabelProviderFragment {}
+    
+                // outline API
+                fragment = outline.OutlineTreeProviderFragment {}
+                fragment = outline.QuickOutlineFragment {}
+    
+                // quickfix API
+                fragment = quickfix.QuickfixProviderFragment {}
+    
+                // content assist API
+                fragment = contentAssist.JavaBasedContentAssistFragment {}
+    
+                // generates a more lightweight Antlr parser and lexer tailored for content assist
+//                fragment = parser.antlr.XtextAntlrUiGeneratorFragment {}
+			fragment = parser.antlr.ex.ca.ContentAssistParserGeneratorFragment {
+				options = {
+        			ignoreCase = true
+//        			backtrack=true
+					classSplitting = true
+				}
+			}
+    
+//                // generates junit test support classes into Generator#pathTestProject
+//                fragment = junit.Junit4Fragment {}
+    
+                // project wizard (optional)
+                // fragment = projectWizard.SimpleProjectWizardFragment {
+                //      generatorProjectName = "${projectName}"
+                //      modelFileExtension = file.extensions
+                // }
+    
+//                // rename refactoring
+//                fragment = refactoring.RefactorElementNameFragment {}
+//    
+//                // provides the necessary bindings for java types integration
+//                fragment = types.TypesGeneratorFragment {}
+//    
+//                // generates the required bindings only if the grammar inherits from Xbase
+//                fragment = xbase.XbaseGeneratorFragment {}
+//    
+//                // provides a preference page for template proposals
+//                fragment = templates.CodetemplatesGeneratorFragment {}
+//    
+//                // provides a compare view
+//                fragment = compare.CompareFragment {
+//                     fileExtensions = file.extensions
+//                }
+    
+            }
+        }
+}
+

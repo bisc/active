@@ -1,0 +1,14 @@
+Contracts implementation TODO list: 
+
+* add types that determine applicability of analyses, e.g. a type for battery
+* integrate dependencies -- z3, spin -- into the release as opposed to communicating via command line
+* create db to aadl transformation to move analysis outputs from DB to the aadl model
+	* may not be needed if all analyses contribute directly to aadl instance model. Instead, next one: 
+* update DB _smartly_ (ie only parts that were affected) after each analysis runs
+* be more principled about types: aadl types, db types, smt types, and spin types. Deal with units property via a separate db column
+* handle more complex aadl types for database: records, lists of ranges, .... 
+* transition to use more canonical aadl properties, potentially eliminating the Contract_Properties set 
+
+Related to smaccmcopter: 
+* We need to be able to specify types of components to which contracts should be applicable (e.g. we want to model-check only processors, not just anything threads can be allocated to; batteries, not just any devices). Related to #1 above.
+
