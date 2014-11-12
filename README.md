@@ -1,26 +1,22 @@
-# README #
+# ACTIVE #
 
-### ACTIVE ###
-
-This is a repository for ACTIVE - a Tool for Integrating Analysis Contracts. It is an OSATE plugin that introduces a contracts annex and allows a user to verify analysis contracts.
+This is a source repository for ACTIVE (Analysis contraCT Integration VErifier) - a tool for integrating analysis contracts in cyber-physical system design. It is an OSATE2 plugin that introduces a contracts annex and allows a user to verify analysis contracts.
 
 ### Installation ###
 
 * Follow the [instructions](https://wiki.sei.cmu.edu/aadl/index.php/Getting_Osate_2_sources) for installing OSATE2.
-* Check out osate2-core at 2.0.8-release; generate Properties and AADL grammars. 
-* Obtain the analysis contracts source at place it in the src folder (either check out from repository or unzip the archives). You will need the following projects: org.osate.aadl2.analysiscontracts, org.osate.xtext.aadl2.contracts, and org.osate.xtext.aadl2.contracts.ui. 
-* Create a folder src-gen in org.osate.xtext.aadl2.contracts. 
-* Install mysql server. On ubuntu, it's packages mysql-server, mysql-common, and mysql-client.
-* Set up mysql server with username=root and password=root.
-* Start mysql server with default configuration (at port 3306).
-* Create a database aadl in mysql.
-* Install z3 and make sure command "z3" is available through $PATH.
-* Install spin and make sure command "spin" is available through $PATH.
-* Run the language infrastructure generation script in org.osate.xtext.aadl2.contracts.contract. Re-run it with every grammar change. 
-* Start OSATE, import the aadl projects. A contract demo project is provided with the package. 
+* Check out [osate2-core](https://github.com/osate/osate2-core) at 2.0.8-release; generate Properties and AADL grammars. 
+* Check out the ACTIVE source (latest release recommended) from this repository. You will need all the contained projects. 
+* Create a folder src-gen in org.osate.xtext.aadl2.contracts.
+* Install MYSQL server. On ubuntu, it's packages mysql-server, mysql-common, and mysql-client.
+* Set up MYSQL server with username=root and password=root. Start MYSQL server with default configuration (at port 3306). Create a database aadl in mysql.
+* Install latest [Z3](https://z3.codeplex.com/releases) and make sure command "z3" is available through PATH. If the latest release produces errors, try version 4.3.1.
+* Install latest [Spin](http://spinroot.com/spin/Src/index.html) and make sure command "spin" is available through PATH. If the latest release produces errors, try version 6.2.5. 
+* Run the language infrastructure generation script GenerateContract.mwe2 in org.osate.xtext.aadl2.contracts.contract. Re-run it with every grammar change.
+* Start OSATE2, import your AADL projects. ACTIVE example projects are available [here](https://github.com/bisc/active-examples). 
 * Create an instance of a system (e.g., right-click a system implementation and select Instantiate System). 
-* Select the instance and click Run Contract Analysis. 
-* Double-click the analysis you want to run, and the tool will execute and verify a sequence of analyses. 
+* Select the instance and click the ACTIVE button in the toolbar. 
+* Double-click the analysis you want to run, and ACTIVE will execute and verify a sequence of analyses. 
 
 ### Who do I talk to? ###
 
