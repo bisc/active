@@ -134,7 +134,8 @@ QuantClause returns QuantClause:
 //	quant=(QuantifierType) types+=ID ids+=ID  (COMMA types+=ID ids+=ID)*;
 
 Literal returns Expression:
-	LPAREN LTLExpression RPAREN |
+	//LPAREN LTLExpression RPAREN |
+	LPAREN ContractClause RPAREN | // recent addition, doesn't have verification implemented
 	{FunctionalExpression} func=QFGTMREF LPAREN (args+=LTLExpression (COMMA args+=LTLExpression)*)? RPAREN | 
 	{IntLiteral} value=INT |
 	{FloatLiteral} value=FLOAT | //{FloatLiteral} value=FLOAT |
