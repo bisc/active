@@ -1,6 +1,6 @@
 # ACTIVE #
 
-This is a source repository for ACTIVE (Analysis contraCT Integration VErifier) - a tool for integrating analysis contracts in cyber-physical system design. It is an OSATE2 plugin that introduces a contracts annex and allows a user to verify analysis contracts.
+This is a source repository for ACTIVE (Analysis contraCT Integration VErifier) - a tool for integrating analysis contracts in cyber-physical system design. It is an OSATE2 plugin that introduces a contracts annex and allows a user to verify analysis contracts. Try ACTIVE out on [examples](https://github.com/bisc/active-examples).
 
 ### Installation ###
 
